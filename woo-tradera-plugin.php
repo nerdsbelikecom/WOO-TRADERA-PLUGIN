@@ -7,7 +7,6 @@
     Author URI: https://example.com
     Version: 1.0.0
     Text Domain: woo-tradera-plugin
-    Domain Path: /languages
 */
 
 // If this file is called directly, abort.

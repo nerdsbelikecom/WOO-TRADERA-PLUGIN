@@ -1,8 +1,8 @@
 <?php
 class Woo_Tradera_Admin {
     public function __construct() {
+        // Initializing actions and filters
         add_action( 'admin_menu', [ $this, 'add_admin_menu' ] );
-        add_action( 'admin_init', [ $this, 'register_settings' ] );
     }
 
     public function register_hooks() {
