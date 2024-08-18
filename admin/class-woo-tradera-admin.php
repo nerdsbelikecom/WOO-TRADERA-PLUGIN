@@ -18,8 +18,8 @@ class Woo_Tradera_Admin {
 
     public function initialize_settings() {
         // Registrera inställningar
-        register_setting('woo_tradera_options_group', 'tradera_client_id');
-        register_setting('woo_tradera_options_group', 'tradera_client_secret');
+        register_setting('woo_tradera_options_group', 'tradera_app_id');
+        register_setting('woo_tradera_options_group', 'tradera_public_key');
         register_setting('woo_tradera_options_group', 'tradera_redirect_uri');
 
         // Lägg till inställningssektioner
@@ -32,17 +32,17 @@ class Woo_Tradera_Admin {
 
         // Lägg till inställningsfält
         add_settings_field(
-            'tradera_client_id',
-            __('Client ID', 'woo-tradera-plugin'),
-            [$this, 'render_client_id_field'],
+            'tradera_app_id',
+            __('Application ID', 'woo-tradera-plugin'),
+            [$this, 'render_app_id_field'],
             'woo-tradera-settings',
             'woo_tradera_main_section'
         );
 
         add_settings_field(
-            'tradera_client_secret',
-            __('Client Secret', 'woo-tradera-plugin'),
-            [$this, 'render_client_secret_field'],
+            'tradera_public_key',
+            __('Public Key', 'woo-tradera-plugin'),
+            [$this, 'render_public_key_field'],
             'woo-tradera-settings',
             'woo_tradera_main_section'
         );
@@ -56,14 +56,14 @@ class Woo_Tradera_Admin {
         );
     }
 
-    public function render_client_id_field() {
-        $client_id = get_option('tradera_client_id');
-        echo '<input type="text" name="tradera_client_id" value="' . esc_attr($client_id) . '" />';
+    public function render_app_id_field() {
+        $app_id = get_option('tradera_app_id');
+        echo '<input type="text" name="tradera_app_id" value="' . esc_attr($app_id) . '" />';
     }
 
-    public function render_client_secret_field() {
-        $client_secret = get_option('tradera_client_secret');
-        echo '<input type="text" name="tradera_client_secret" value="' . esc_attr($client_secret) . '" />';
+    public function render_public_key_field() {
+        $public_key = get_option('tradera_public_key');
+        echo '<input type="text" name="tradera_public_key" value="' . esc_attr($public_key) . '" />';
     }
 
     public function render_redirect_uri_field() {
@@ -103,11 +103,10 @@ class Woo_Tradera_Admin {
                 <a href="<?php echo esc_url(admin_url('admin-post.php?action=woo_tradera_logout')); ?>" class="button"><?php _e('Logga ut', 'woo-tradera-plugin'); ?></a>
             <?php else: ?>
                 <p><?php _e('Du är inte inloggad på Tradera.', 'woo-tradera-plugin'); ?></p>
-                <form action="<?php echo esc_url('https://api.tradera.com/oauth2/authorize'); ?>" method="get">
-                    <input type="hidden" name="response_type" value="code">
-                    <input type="hidden" name="client_id" value="<?php echo esc_attr(get_option('tradera_client_id')); ?>">
+                <form action="https://api.tradera.com/tokenlogin.aspx" method="get">
+                    <input type="hidden" name="appId" value="<?php echo esc_attr(get_option('tradera_app_id')); ?>">
+                    <input type="hidden" name="pkey" value="<?php echo esc_attr(get_option('tradera_public_key')); ?>">
                     <input type="hidden" name="redirect_uri" value="<?php echo esc_attr(get_option('tradera_redirect_uri')); ?>">
-                    <input type="hidden" name="scope" value="read">
                     <input type="submit" class="button button-primary" value="<?php _e('Logga in på Tradera', 'woo-tradera-plugin'); ?>">
                 </form>
             <?php endif; ?>
@@ -116,7 +115,7 @@ class Woo_Tradera_Admin {
     }
 
     public function authenticate() {
-        // Autentisering logik
+        // Autentisering logik (uppdatera med rätt autentisering)
         $current_user = wp_get_current_user();
         update_user_meta($current_user->ID, 'tradera_token', 'dummy_token');
         update_user_meta($current_user->ID, 'tradera_user_id', 'dummy_user_id');
