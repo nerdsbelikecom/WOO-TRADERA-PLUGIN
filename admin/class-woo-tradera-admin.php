@@ -18,8 +18,9 @@ class Woo_Tradera_Admin {
 
     public function initialize_settings() {
         // Registrera inställningar
-        register_setting('woo_tradera_options_group', 'woo_tradera_api_key');
-        register_setting('woo_tradera_options_group', 'woo_tradera_api_secret');
+        register_setting('woo_tradera_options_group', 'tradera_client_id');
+        register_setting('woo_tradera_options_group', 'tradera_client_secret');
+        register_setting('woo_tradera_options_group', 'tradera_redirect_uri');
 
         // Lägg till inställningssektioner
         add_settings_section(
@@ -31,30 +32,43 @@ class Woo_Tradera_Admin {
 
         // Lägg till inställningsfält
         add_settings_field(
-            'woo_tradera_api_key',
-            __('API Key', 'woo-tradera-plugin'),
-            [$this, 'render_api_key_field'],
+            'tradera_client_id',
+            __('Client ID', 'woo-tradera-plugin'),
+            [$this, 'render_client_id_field'],
             'woo-tradera-settings',
             'woo_tradera_main_section'
         );
 
         add_settings_field(
-            'woo_tradera_api_secret',
-            __('API Secret', 'woo-tradera-plugin'),
-            [$this, 'render_api_secret_field'],
+            'tradera_client_secret',
+            __('Client Secret', 'woo-tradera-plugin'),
+            [$this, 'render_client_secret_field'],
+            'woo-tradera-settings',
+            'woo_tradera_main_section'
+        );
+
+        add_settings_field(
+            'tradera_redirect_uri',
+            __('Redirect URI', 'woo-tradera-plugin'),
+            [$this, 'render_redirect_uri_field'],
             'woo-tradera-settings',
             'woo_tradera_main_section'
         );
     }
 
-    public function render_api_key_field() {
-        $api_key = get_option('woo_tradera_api_key');
-        echo '<input type="text" name="woo_tradera_api_key" value="' . esc_attr($api_key) . '" />';
+    public function render_client_id_field() {
+        $client_id = get_option('tradera_client_id');
+        echo '<input type="text" name="tradera_client_id" value="' . esc_attr($client_id) . '" />';
     }
 
-    public function render_api_secret_field() {
-        $api_secret = get_option('woo_tradera_api_secret');
-        echo '<input type="text" name="woo_tradera_api_secret" value="' . esc_attr($api_secret) . '" />';
+    public function render_client_secret_field() {
+        $client_secret = get_option('tradera_client_secret');
+        echo '<input type="text" name="tradera_client_secret" value="' . esc_attr($client_secret) . '" />';
+    }
+
+    public function render_redirect_uri_field() {
+        $redirect_uri = get_option('tradera_redirect_uri');
+        echo '<input type="text" name="tradera_redirect_uri" value="' . esc_attr($redirect_uri) . '" />';
     }
 
     public function add_admin_menu() {
@@ -89,8 +103,11 @@ class Woo_Tradera_Admin {
                 <a href="<?php echo esc_url(admin_url('admin-post.php?action=woo_tradera_logout')); ?>" class="button"><?php _e('Logga ut', 'woo-tradera-plugin'); ?></a>
             <?php else: ?>
                 <p><?php _e('Du är inte inloggad på Tradera.', 'woo-tradera-plugin'); ?></p>
-                <form action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="post">
-                    <input type="hidden" name="action" value="woo_tradera_authenticate">
+                <form action="<?php echo esc_url('https://api.tradera.com/oauth2/authorize'); ?>" method="get">
+                    <input type="hidden" name="response_type" value="code">
+                    <input type="hidden" name="client_id" value="<?php echo esc_attr(get_option('tradera_client_id')); ?>">
+                    <input type="hidden" name="redirect_uri" value="<?php echo esc_attr(get_option('tradera_redirect_uri')); ?>">
+                    <input type="hidden" name="scope" value="read">
                     <input type="submit" class="button button-primary" value="<?php _e('Logga in på Tradera', 'woo-tradera-plugin'); ?>">
                 </form>
             <?php endif; ?>
