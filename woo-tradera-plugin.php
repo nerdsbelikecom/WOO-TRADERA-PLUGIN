@@ -29,6 +29,7 @@ require_once WOO_TRADERA_PLUGIN_PATH . 'admin/class-woo-tradera-admin.php';
 require_once WOO_TRADERA_PLUGIN_PATH . 'includes/class-woo-tradera.php';
 require_once WOO_TRADERA_PLUGIN_PATH . 'includes/class-woo-tradera-get-access-token.php'; // Inkludera filen för autentisering
 require_once WOO_TRADERA_PLUGIN_PATH . 'includes/class-woo-tradera-callback-handler.php';
+require_once WOO_TRADERA_PLUGIN_PATH . 'includes/class-woo-tradera-product-data-tabs.php'; // Inkludera den nya klassfilen
 
 // Aktiveringskod för pluginet
 function activate_woo_tradera_plugin() {

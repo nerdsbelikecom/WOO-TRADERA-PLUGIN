@@ -20,7 +20,6 @@ class Woo_Tradera_Admin {
         // Registrera inställningar
         register_setting('woo_tradera_options_group', 'tradera_app_id');
         register_setting('woo_tradera_options_group', 'tradera_public_key');
-        register_setting('woo_tradera_options_group', 'tradera_redirect_uri');
 
         // Lägg till inställningssektioner
         add_settings_section(
@@ -46,14 +45,6 @@ class Woo_Tradera_Admin {
             'woo-tradera-settings',
             'woo_tradera_main_section'
         );
-
-        add_settings_field(
-            'tradera_redirect_uri',
-            __('Redirect URI', 'woo-tradera-plugin'),
-            [$this, 'render_redirect_uri_field'],
-            'woo-tradera-settings',
-            'woo_tradera_main_section'
-        );
     }
 
     public function render_app_id_field() {
@@ -64,11 +55,6 @@ class Woo_Tradera_Admin {
     public function render_public_key_field() {
         $public_key = get_option('tradera_public_key');
         echo '<input type="text" name="tradera_public_key" value="' . esc_attr($public_key) . '" />';
-    }
-
-    public function render_redirect_uri_field() {
-        $redirect_uri = get_option('tradera_redirect_uri');
-        echo '<input type="text" name="tradera_redirect_uri" value="' . esc_attr($redirect_uri) . '" />';
     }
 
     public function add_admin_menu() {
@@ -86,9 +72,17 @@ class Woo_Tradera_Admin {
         $current_user = wp_get_current_user();
         $token = get_user_meta($current_user->ID, 'tradera_token', true);
         $userId = get_user_meta($current_user->ID, 'tradera_user_id', true);
+
+        // Dynamiskt generera Redirect URI för att omdirigera användaren tillbaka till plugin-sidan
+        $redirectUri = admin_url('admin.php?page=woo-tradera-settings');
         ?>
         <div class="wrap">
             <h1><?php _e('Tradera API Settings', 'woo-tradera-plugin'); ?></h1>
+            <p>
+                <a href="https://api.tradera.com/DeveloperCenter/register.aspx" target="_blank">
+                    <?php _e('Ingen API-nyckel? Tryck här', 'woo-tradera-plugin'); ?>
+                </a>
+            </p>
             <form method="post" action="options.php">
                 <?php
                 settings_fields('woo_tradera_options_group');
@@ -106,7 +100,7 @@ class Woo_Tradera_Admin {
                 <form action="https://api.tradera.com/tokenlogin.aspx" method="get">
                     <input type="hidden" name="appId" value="<?php echo esc_attr(get_option('tradera_app_id')); ?>">
                     <input type="hidden" name="pkey" value="<?php echo esc_attr(get_option('tradera_public_key')); ?>">
-                    <input type="hidden" name="redirect_uri" value="<?php echo esc_attr(get_option('tradera_redirect_uri')); ?>">
+                    <input type="hidden" name="redirect" value="<?php echo esc_attr($redirectUri); ?>">
                     <input type="submit" class="button button-primary" value="<?php _e('Logga in på Tradera', 'woo-tradera-plugin'); ?>">
                 </form>
             <?php endif; ?>

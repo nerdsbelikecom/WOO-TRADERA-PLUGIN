@@ -4,11 +4,14 @@ function woo_tradera_login_page() {
     $appId = 'YOUR_APP_ID'; // Din applikations-ID
     $publicKey = 'YOUR_PUBLIC_KEY'; // Din offentliga nyckel
     $secretKey = wp_generate_uuid4(); // Skapar en unik nyckel för sessionen
-    $redirectUri = 'https://yourwebsite.com/tradera-login-callback'; // Din AcceptURL
 
-    $loginUrl = "https://api.tradera.com/tokenlogin.aspx?appId={$appId}&pkey={$publicKey}&skey={$secretKey}&ruparams=" . urlencode("redirect={$redirectUri}");
+    // Dynamiskt generera Redirect URI för att omdirigera användaren tillbaka till samma sida
+    $redirectUri = urlencode(admin_url('admin.php?page=woo-tradera-admin'));
+    
+    // Skapa inloggnings-URL för Tradera
+    $loginUrl = "https://api.tradera.com/tokenlogin.aspx?appId={$appId}&pkey={$publicKey}&skey={$secretKey}&ruparams=redirect={$redirectUri}";
 
-    // Redirect till Tradera inloggningssida
+    // Omdirigera till Tradera inloggningssida
     wp_redirect($loginUrl);
     exit;
 }
@@ -31,6 +34,10 @@ function woo_tradera_login_callback() {
     } else {
         echo "Inloggningen misslyckades eller avbröts.";
     }
+
+    // Omdirigera tillbaka till plugin-sidan
+    wp_redirect(admin_url('admin.php?page=woo-tradera-admin'));
+    exit;
 }
 
 // Skapa en sida i WordPress som använder denna callback
@@ -90,5 +97,3 @@ function woo_tradera_logout() {
 
 add_action('admin_menu', 'woo_tradera_admin_menu');
 add_action('admin_post_woo_tradera_logout', 'woo_tradera_logout');
-
-?>
